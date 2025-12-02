@@ -15,11 +15,12 @@ MODELS_DIR = HERE / "models"
 
 # tiny|base|small|turbo|medium|large|turbo
 # ref: https://github.com/openai/whisper?tab=readme-ov-file#available-models-and-languages
-model_size = "turbo"  # optimized large-v3
+model_name = "turbo"  # optimized large-v3
 
-logger.info(f"loading model {model_size}")
+logger.info(f"loading model {model_name}")
 model = whisper.load_model(
-    model_size
+    model_name,
+    download_root=str(MODELS_DIR),
 )
 
 
