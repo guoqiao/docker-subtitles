@@ -3,9 +3,9 @@
 A Docker Env to generate subtitles with AI models.
 
 Supported models:
-- faster whisper
-- openai whisper
-- openai transcription api
+- faster whisper (local model, GPU required)
+- openai whisper (local model, GPU required)
+- openai transcription api (api key required)
 
 Supported subtitle formats:
 - srt/SubRip
