@@ -9,6 +9,7 @@ RUN apt-get update -qq \
         git \
         time \
         tree \
+        ffmpeg \
     && apt-get clean
 
 ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn/lib:/usr/local/cuda/lib64:$LD_LIBRARY_PATH

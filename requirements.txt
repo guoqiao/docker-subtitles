@@ -1,5 +1,9 @@
 loguru
 
 pysubs2
+
+openai-whisper
+setuptools-rust
+
 faster-whisper
 whisperx
