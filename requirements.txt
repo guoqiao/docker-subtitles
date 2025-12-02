@@ -1,0 +1,5 @@
+loguru
+
+pysubs2
+faster-whisper
+whisperx
