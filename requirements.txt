@@ -2,6 +2,7 @@ loguru
 
 pysubs2
 
+openai
 openai-whisper
 setuptools-rust
 
