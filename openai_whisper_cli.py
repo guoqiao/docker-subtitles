@@ -88,7 +88,8 @@ def transcribe(audio_path: Path, language: str = None, format: str = "vtt", verb
         return
 
     # by default, use format type as file extension
-    ext = format.lower().strip('.')
+    format = format.lower().strip('.')
+    ext = format
 
     if format in ["txt", "text"]:
         # text = result.get("text", "")  # all in 1 line
@@ -113,6 +114,8 @@ def transcribe(audio_path: Path, language: str = None, format: str = "vtt", verb
             print(caption, end="\n\n")
             captions.append(caption)
         text = "\n\n".join(captions)
+    else:
+        raise ValueError(f"format not supported yet: {format}")
 
     suffix = f".{language}.{ext}" if language else f".{ext}"
     out_path = audio_path.with_suffix(suffix)
