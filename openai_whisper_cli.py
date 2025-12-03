@@ -58,7 +58,17 @@ def seg2srt(i, segment):
     ])
 
 
-def transcribe(audio_path: Path, language: str = None, format: str = "srt", verbose: bool = False):
+def seg2vtt(segment):
+    start = segment.get("start", 0)
+    end = segment.get("end", 0)
+    text = segment.get("text", "")
+    return "\n".join([
+        f"{sec2srt(start)} --> {sec2srt(end)}",
+        text.strip(),
+    ])
+
+
+def transcribe(audio_path: Path, language: str = None, format: str = "vtt", verbose: bool = False):
     t0 = time.time()
     audio_path = Path(audio_path)
     logger.info(f"transcribing {audio_path}")
@@ -68,33 +78,48 @@ def transcribe(audio_path: Path, language: str = None, format: str = "srt", verb
         language=language,
         verbose=verbose,  # will print help info and captions
     )
-    # pp(result)
+    pp(result)
 
     language = result.get("language")
-
-    # text = result.get("text", "")
-    # print(text)
-
     segments = result.get("segments", [])
+
     if not segments:
         logger.warning(f"no segments found for {audio_path}")
         return
 
-    if format.lower().strip() == "srt":
+    # by default, use format type as file extension
+    ext = format.lower().strip('.')
+
+    if format in ["txt", "text"]:
+        # text = result.get("text", "")  # all in 1 line
+        ext = "txt"
+        captions = []
+        for segment in segments:
+            caption = segment.get("text", "").strip()
+            print(caption)
+            captions.append(caption)
+        text = "\n".join(captions)
+    elif format in ["vtt"]:
+        captions = ["WEBVTT"]
+        for segment in segments:
+            caption = seg2vtt(segment)
+            print(caption, end="\n\n")
+            captions.append(caption)
+        text = "\n\n".join(captions)
+    elif format in ["srt"]:
         captions = []
         for i, segment in enumerate(segments, start=1):
             caption = seg2srt(i, segment)
             print(caption, end="\n\n")
             captions.append(caption)
+        text = "\n\n".join(captions)
 
-        srt_path = audio_path.with_suffix(f".{language}.srt")
-        srt_text = "\n\n".join(captions)
-        srt_path.write_text(srt_text)
-        t1 = time.time()
-        t = t1 - t0
-        logger.info(f"SRT/SubRip saved to {srt_path} in {t:.1f}s")
-    else:
-        raise ValueError(f"format not supported yet: {format}")
+    suffix = f".{language}.{ext}" if language else f".{ext}"
+    out_path = audio_path.with_suffix(suffix)
+    out_path.write_text(text)
+    t1 = time.time()
+    t = t1 - t0
+    logger.info(f"done in {t:.1f}s: {out_path}")
 
 
 def cli():
