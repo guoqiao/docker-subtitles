@@ -10,6 +10,10 @@ from pprint import pp
 
 from loguru import logger
 from openai import OpenAI
+from openai.types.audio.transcription import Transcription
+
+# https://github.com/openai/openai-python/blob/main/src/openai/types/audio/translation_verbose.py
+from openai.types.audio.transcription_verbose import TranscriptionVerbose
 
 
 HERE = Path(__file__).parent
@@ -48,20 +52,40 @@ def transcribe(audio_path: Path, language: str = None, format: str = "srt"):
             # https://platform.openai.com/docs/api-reference/audio/verbose-json-object
             response_format=format,
         )
-        if OPENAI_API_BACKEND == OPENAI_API_BACKEND_LEMONFOX:
+
+    pp(result)
+
+    fmt = format.lower().strip()
+    if OPENAI_API_BACKEND == OPENAI_API_BACKEND_LEMONFOX:
+        if fmt in ["vtt", "srt", "text"]:
             logger.info("convert lemonfox result from json to python str")
             result = json.loads(result)
 
-        print(result)
+    # when request json format, lemonfox returns a Transcription object
+    if isinstance(result, Transcription):
+        fmt = "text"  # json
+        result = result.text
+    elif isinstance(result, TranscriptionVerbose):
+        fmt = "text"  # verbose_json
+        result = result.text
 
-    if format.lower().strip() == "srt":
-        suffix = f".{language}.srt" if language else ".srt"
-        srt_path = audio_path.with_suffix(suffix)
-        srt_path.write_text(result)
-        t = time.time() - t0
-        logger.info(f"SRT/SubRip saved to {srt_path} in {t:.1f}s")
-    else:
-        raise ValueError(f"format not supported yet: {format}")
+    ext = FORMAT_EXT.get(fmt, fmt)
+    suffix = f".{language}.{ext}" if language else f".{ext}"
+    out_path = audio_path.with_suffix(suffix)
+
+    out_path.write_text(result)
+    t = time.time() - t0
+    logger.info(f"{fmt} saved to {out_path} in {t:.1f}s")
+
+
+# supported response formats and their file extensions
+FORMAT_EXT = {
+    "vtt": "vtt",
+    "srt": "srt",
+    "text": "txt",
+    "json": "json",
+    "verbose_json": "json",
+}
 
 
 def cli():
@@ -71,7 +95,7 @@ def cli():
     )
     parser.add_argument("audio_path", type=str, help="path to audio file")
     parser.add_argument("-l", "--language", help="language, e.g. en, zh")
-    parser.add_argument("-f", "--format", default="srt", help="output format")
+    parser.add_argument("-f", "--format", choices=FORMAT_EXT, default="vtt", help="api response format")
     return parser.parse_args()
 
 
