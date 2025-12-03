@@ -12,9 +12,9 @@ RUN apt-get update -qq \
         ffmpeg \
     && apt-get clean
 
-ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn/lib:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-
 WORKDIR /workspace
 
 ADD requirements.txt .
 RUN pip install -r requirements.txt
+
+ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn/lib:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
