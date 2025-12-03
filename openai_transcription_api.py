@@ -3,6 +3,7 @@
 
 import argparse
 import os
+import json
 import time
 from pathlib import Path
 from pprint import pp
@@ -14,9 +15,11 @@ from openai import OpenAI
 HERE = Path(__file__).parent
 MODELS_DIR = HERE / "models"
 
+LEMONFOX_AI_BASE_URL = "https://api.lemonfox.ai/v1"
+
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_API_BASE") or "https://api.openai.com/v1"
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-MODEL_NAME = os.getenv("MODEL_NAME", "whisper-1")
+OPENAI_MODEL_NAME = os.getenv("OPENAI_MODEL_NAME", "whisper-1")
 
 # tiny|base|small|turbo|medium|large|turbo
 # ref: https://github.com/openai/whisper?tab=readme-ov-file#available-models-and-languages
@@ -32,11 +35,11 @@ client = OpenAI(
 def transcribe(audio_path: Path, language: str = None, format: str = "srt"):
     t0 = time.time()
     audio_path = Path(audio_path)
-    logger.info(f"transcribing {audio_path} with {MODEL_NAME}")
+    logger.info(f"transcribing {audio_path} with {OPENAI_MODEL_NAME}")
     with audio_path.open("rb") as audio_file:
         # https://platform.openai.com/docs/api-reference/audio/createTranscription
         result = client.audio.transcriptions.create(
-            model=MODEL_NAME,
+            model=OPENAI_MODEL_NAME,
             file=audio_file,
             # https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
             language=language,
@@ -44,6 +47,10 @@ def transcribe(audio_path: Path, language: str = None, format: str = "srt"):
             # https://platform.openai.com/docs/api-reference/audio/verbose-json-object
             response_format=format,
         )
+        if OPENAI_BASE_URL == LEMONFOX_AI_BASE_URL:
+            logger.info("convert lemonfox result from json to python str")
+            result = json.loads(result)
+
         print(result)
 
     if format.lower().strip() == "srt":
