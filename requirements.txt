@@ -8,3 +8,5 @@ setuptools-rust
 
 faster-whisper
 whisperx
+
+assemblyai
