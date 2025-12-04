@@ -53,7 +53,7 @@ def transcribe(audio_path: Path, language: str = None, format: str = "srt"):
             response_format=format,
         )
 
-    pp(result)
+    # pp(result)
 
     fmt = format.lower().strip()
     if OPENAI_API_BACKEND == OPENAI_API_BACKEND_LEMONFOX:
@@ -95,16 +95,13 @@ def cli():
     )
     parser.add_argument("audio_path", type=str, help="path to audio file")
     parser.add_argument("-l", "--language", help="language, e.g. en, zh")
-    parser.add_argument("-f", "--format", choices=FORMAT_EXT, default="vtt", help="api response format")
+    parser.add_argument("-f", "--format", choices=FORMAT_EXT, default="srt", help="api response format")
     return parser.parse_args()
 
 
 def main():
     args = cli()
-    language = args.language
-    while not language:
-        language = input("Enter language (e.g.: en, zh): ")
-    transcribe(args.audio_path, language=language, format=args.format)
+    transcribe(args.audio_path, language=args.language, format=args.format)
 
 
 if __name__ == "__main__":

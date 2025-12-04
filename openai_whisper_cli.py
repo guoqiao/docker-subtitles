@@ -68,7 +68,7 @@ def seg2vtt(segment):
     ])
 
 
-def transcribe(audio_path: Path, language: str = None, format: str = "vtt", verbose: bool = False):
+def transcribe(audio_path: Path, language: str = None, format: str = "srt", verbose: bool = False):
     t0 = time.time()
     audio_path = Path(audio_path)
     logger.info(f"transcribing {audio_path}")
@@ -78,7 +78,7 @@ def transcribe(audio_path: Path, language: str = None, format: str = "vtt", verb
         language=language,
         verbose=verbose,  # will print help info and captions
     )
-    pp(result)
+    # pp(result)
 
     language = result.get("language")
     segments = result.get("segments", [])

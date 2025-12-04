@@ -8,8 +8,8 @@ Supported models:
 - openai transcription api (api key required)
 
 Supported subtitle formats:
-- vtt/WebVTT
 - srt/SubRip
+- vtt/WebVTT
 - txt
 
 To be continued.
@@ -29,8 +29,8 @@ make shell
 
 Now you should be in the container, run any:
 ```
-./openai_whisper_cli.py [-f vtt|srt|txt] [-l zh|en] data/audio.m4a
-./faster_whisper_cli.py [-f vtt|srt|txt] data/audio.m4a
+./openai_whisper_cli.py [-f srt|vtt|txt] [-l zh|en] data/audio.m4a
+./faster_whisper_cli.py [-f srt|vtt|txt] data/audio.m4a
 ```
 
-Example output file: `data/audio.zh.vtt`
+Example output file: `data/audio.zh.srt`
