@@ -24,16 +24,24 @@ OPENAI_MODEL_NAME = os.getenv("OPENAI_MODEL_NAME", "whisper-1")
 OPENAI_API_BACKEND_LEMONFOX = "lemonfox"
 OPENAI_API_BACKEND = os.getenv("OPENAI_API_BACKEND", OPENAI_API_BACKEND_LEMONFOX)
 
+
+def get_required_env_var(name: str) -> str:
+    try:
+        return os.environ[name]
+    except KeyError:
+        raise ValueError(f"Environment variable {name} is required")
+
+
 if OPENAI_API_BACKEND == OPENAI_API_BACKEND_LEMONFOX:
     logger.info("using lemonfox api")
     client = OpenAI(
         base_url="https://api.lemonfox.ai/v1",
-        api_key=os.environ["LEMONFOX_AI_API_KEY"],
+        api_key=get_required_env_var("LEMONFOX_AI_API_KEY"),
     )
 else:
     logger.info("using openai api")
     client = OpenAI(
-        api_key=os.environ["OPENAI_API_KEY"],
+        api_key=get_required_env_var("OPENAI_API_KEY"),
     )
 
 
