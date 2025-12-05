@@ -1,6 +1,6 @@
-# Docker Subtitles
+# Docker Transcribers
 
-A Docker Env to generate subtitles with AI models.
+A Docker Env to transcribe video/audio with AI model/API and generate subtitles.
 
 Supported models:
 - faster whisper (local model, GPU required)
@@ -29,8 +29,9 @@ make shell
 
 Now you should be in the container, run any:
 ```
-./openai_whisper_cli.py [-f srt|vtt|txt] [-l zh|en] data/audio.m4a
-./faster_whisper_cli.py [-f srt|vtt|txt] data/audio.m4a
+./transcribe_with_faster_whisper.py [-f srt|vtt|txt] data/audio.m4a
+./transcribe_with_openai_whisper.py [-f srt|vtt|txt] data/audio.m4a
+./transcribe_with_openai_api.py [-f srt|vtt|txt] data/audio.m4a
 ```
 
 Example output file: `data/audio.zh.srt`
